@@ -1,6 +1,7 @@
 """Flashcards application module."""
 
 from dataclasses import dataclass
+from random import choice
 
 
 @dataclass
@@ -90,6 +91,29 @@ def handle_export_command(deck):
     print(f"{len(deck.cards)} cards have been saved.")
 
 
+def handle_ask_command(deck):
+    print("How many times to ask?")
+    n_ask = int(input())
+    terms = list(deck.cards.keys())
+    for _ in range(n_ask):
+        term = choice(terms)
+        card = deck.cards[term]
+        print(f'Print the definition of "{term}":')
+        answer = input()
+        if answer == card.definition:
+            print("Correct!")
+        else:
+            matched = False
+            for other_term, other_card in deck.cards.items():
+                if other_card.definition == answer:
+                    print(
+                        f'Wrong. The right answer is "{card.definition}", but your definition is correct for "{other_term}".')
+                    matched = True
+                    break
+            if not matched:
+                print(f'Wrong. The right answer is "{card.definition}".')
+
+
 def display_menu(deck: Deck):
     print("Input the action (add, remove, import, export, ask, exit):")
     command = input()
@@ -103,7 +127,7 @@ def display_menu(deck: Deck):
         case "export":
             handle_export_command(deck)
         case "ask":
-            pass
+            handle_ask_command(deck)
         case "exit":
             print("Bye bye!")
             exit(0)
