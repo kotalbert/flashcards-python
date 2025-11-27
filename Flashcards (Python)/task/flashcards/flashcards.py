@@ -2,12 +2,14 @@
 
 
 def main():
-    print("Card:")
     term = input()
-    print(term)
-    print("Definition:")
     definition = input()
-    print(definition)
+    answer = input()
+
+    if answer == definition:
+        print("Your answer is right!")
+    else:
+        print("Your answer is wrong...")
 
 
 if __name__ == "__main__":
