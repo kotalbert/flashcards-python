@@ -28,11 +28,29 @@ class Deck:
             raise ValueError(f'The definition "{definition}" already exists.')
         self.cards[term] = Flashcard(term, definition)
 
+    def remove_card(self, term: str):
+        """Remove a flashcard from the deck by its term."""
+
+        if term in self.cards:
+            del self.cards[term]
+        else:
+            raise ValueError(f'Can\'t remove "{term}": there is no such card.')
+
 
 def main():
     deck = Deck()
     while True:
         display_menu(deck)
+
+
+def handle_remove_command(deck):
+    try:
+        print("Which card?")
+        term = input()
+        deck.remove_card(term)
+        print("The card has been removed.")
+    except ValueError as e:
+        print(e)
 
 
 def display_menu(deck: Deck):
@@ -42,7 +60,7 @@ def display_menu(deck: Deck):
         case "add":
             handle_add_command(deck)
         case "remove":
-            pass
+            handle_remove_command(deck)
         case "import":
             pass
         case "export":
