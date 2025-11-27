@@ -9,12 +9,38 @@ class Flashcard:
     definition: str
 
 
+class Deck:
+    """Class representing a deck of flashcards."""
+
+    def __init__(self):
+        self.cards = {}
+
+    def add_card(self, term: str, definition: str):
+        """Add a new flashcard to the deck.
+
+        Guard against duplicate terms and definitions.
+        Raises ValueError if term or definition already exists.
+        """
+
+        if term in self.cards:
+            raise ValueError(f'The term "{term}" already exists.')
+        if any(c.definition == definition for c in self.cards.values()):
+            raise ValueError(f'The definition "{definition}" already exists.')
+        self.cards[term] = Flashcard(term, definition)
+
+
 def main():
+    deck = Deck()
+    while True:
+        display_menu(deck)
+
+
+def display_menu(deck: Deck):
     print("Input the action (add, remove, import, export, ask, exit):")
     command = input()
     match command.lower():
         case "add":
-            pass
+            handle_add_command(deck)
         case "remove":
             pass
         case "import":
@@ -25,8 +51,21 @@ def main():
             pass
         case "exit":
             print("Bye bye!")
+            exit(0)
         case _:
             print(f'Unknown command: "{command}"')
+
+
+def handle_add_command(deck: Deck):
+    try:
+        print("The term for the new card:")
+        term = input()
+        print("The definition for the new card:")
+        definition = input()
+        deck.add_card(term, definition)
+        print(f'The pair ("{term}":"{definition}") has been added.')
+    except ValueError as e:
+        print(e)
 
 
 def add_cards():
@@ -75,4 +114,4 @@ def add_cards():
 
 
 if __name__ == "__main__":
-    add_cards()
+    main()
