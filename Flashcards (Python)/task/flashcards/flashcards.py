@@ -138,9 +138,19 @@ def display_menu(deck: Deck):
 def handle_add_command(deck: Deck):
     try:
         print("The term for the new card:")
-        term = input()
+        while True:
+            term = input()
+            if term in deck.cards:
+                print(f'The term "{term}" already exists. Try again:')
+            else:
+                break
         print("The definition for the new card:")
-        definition = input()
+        while True:
+            definition = input()
+            if any(c.definition == definition for c in deck.cards.values()):
+                print(f'The definition "{definition}" already exists. Try again:')
+            else:
+                break
         deck.add_card(term, definition)
         print(f'The pair ("{term}":"{definition}") has been added.')
     except ValueError as e:
