@@ -42,8 +42,8 @@ class Deck:
 
         if term not in self.cards:
             raise ValueError(f'Can\'t update "{term}": there is no such card.')
-        if any(c.definition == new_definition for c in self.cards.values()):
-            raise ValueError(f'The definition "{new_definition}" already exists.')
+        # if any(c.definition == new_definition for c in self.cards.values()):
+        #     raise ValueError(f'The definition "{new_definition}" already exists.')
         self.cards[term].definition = new_definition
 
 
@@ -77,6 +77,7 @@ def handle_import_command(deck):
                 except ValueError:
                     # update existing card
                     deck.update_card(term, definition)
+                    n_imported += 1  # updating also counts as importing
             print(f"{n_imported} cards have been loaded.")
     except FileNotFoundError:
         print("File not found.")
@@ -87,7 +88,7 @@ def handle_export_command(deck):
     filename = input()
     with open(filename, "w") as file:
         for card in deck.cards.values():
-            file.write(f"{card.term}: {card.definition}\n")
+            file.write(f"{card.term}:{card.definition}\n")
     print(f"{len(deck.cards)} cards have been saved.")
 
 
