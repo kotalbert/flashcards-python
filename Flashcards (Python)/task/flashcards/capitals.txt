@@ -1,0 +1,6 @@
+France: Paris
+Germany: Berlin
+Italy: Rome
+Spain: Madrid
+Portugal: Lisbon
+Netherlands: Amsterdam

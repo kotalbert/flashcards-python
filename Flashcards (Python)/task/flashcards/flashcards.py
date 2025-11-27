@@ -36,6 +36,15 @@ class Deck:
         else:
             raise ValueError(f'Can\'t remove "{term}": there is no such card.')
 
+    def update_card(self, term: str, new_definition: str):
+        """Update the definition of an existing flashcard."""
+
+        if term not in self.cards:
+            raise ValueError(f'Can\'t update "{term}": there is no such card.')
+        if any(c.definition == new_definition for c in self.cards.values()):
+            raise ValueError(f'The definition "{new_definition}" already exists.')
+        self.cards[term].definition = new_definition
+
 
 def main():
     deck = Deck()
@@ -53,6 +62,25 @@ def handle_remove_command(deck):
         print(e)
 
 
+def handle_import_command(deck):
+    print("File name:")
+    filename = input()
+    try:
+        with open(filename, "r") as file:
+            n_imported = 0
+            for line in file:
+                term, definition = line.strip().split(":")
+                try:
+                    deck.add_card(term, definition)
+                    n_imported += 1
+                except ValueError:
+                    # update existing card
+                    deck.update_card(term, definition)
+            print(f"{n_imported} cards have been loaded.")
+    except FileNotFoundError:
+        print("File not found.")
+
+
 def display_menu(deck: Deck):
     print("Input the action (add, remove, import, export, ask, exit):")
     command = input()
@@ -62,7 +90,7 @@ def display_menu(deck: Deck):
         case "remove":
             handle_remove_command(deck)
         case "import":
-            pass
+            handle_import_command(deck)
         case "export":
             pass
         case "ask":
