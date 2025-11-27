@@ -81,6 +81,15 @@ def handle_import_command(deck):
         print("File not found.")
 
 
+def handle_export_command(deck):
+    print("File name:")
+    filename = input()
+    with open(filename, "w") as file:
+        for card in deck.cards.values():
+            file.write(f"{card.term}: {card.definition}\n")
+    print(f"{len(deck.cards)} cards have been saved.")
+
+
 def display_menu(deck: Deck):
     print("Input the action (add, remove, import, export, ask, exit):")
     command = input()
@@ -92,7 +101,7 @@ def display_menu(deck: Deck):
         case "import":
             handle_import_command(deck)
         case "export":
-            pass
+            handle_export_command(deck)
         case "ask":
             pass
         case "exit":
