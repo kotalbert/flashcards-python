@@ -10,6 +10,26 @@ class Flashcard:
 
 
 def main():
+    print("Input the action (add, remove, import, export, ask, exit):")
+    command = input()
+    match command.lower():
+        case "add":
+            pass
+        case "remove":
+            pass
+        case "import":
+            pass
+        case "export":
+            pass
+        case "ask":
+            pass
+        case "exit":
+            print("Bye bye!")
+        case _:
+            print(f'Unknown command: "{command}"')
+
+
+def add_cards():
     cards = {}
     print("Input the number of cards:")
     n_cards = int(input())
@@ -55,4 +75,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    add_cards()
