@@ -69,8 +69,9 @@ class Deck:
 
 def main():
     deck = Deck()
+    log = io.StringIO()
     while True:
-        display_menu(deck)
+        display_menu(deck, log)
 
 
 def handle_remove_command(deck: Deck, log: io.StringIO):
@@ -85,7 +86,7 @@ def handle_remove_command(deck: Deck, log: io.StringIO):
         log.write(removed_ + "\n")
     except ValueError as e:
         print(e)
-        log.write(e)
+        log.write(str(e))
 
 
 def handle_import_command(deck: Deck, log: io.StringIO):
@@ -99,7 +100,7 @@ def handle_import_command(deck: Deck, log: io.StringIO):
             for line in file:
                 term, definition, number_tried = line.strip().split(":")
                 try:
-                    deck.add_card(term, definition, number_tried)
+                    deck.add_card(term, definition, int(number_tried))
                     n_imported += 1
                 except ValueError:
                     # update existing card
@@ -200,8 +201,7 @@ def handle_reset_stats_command(deck: Deck, log: io.StringIO):
     log.write(reset_ + "\n")
 
 
-def display_menu(deck: Deck):
-    log = io.StringIO()
+def display_menu(deck: Deck, log: io.StringIO):
     stats_ = "Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):"
     print(stats_)
     log.write(stats_ + "\n")
@@ -233,47 +233,71 @@ def display_menu(deck: Deck):
 
 def handle_add_command(deck: Deck, log: io.StringIO):
     try:
-        print("The term for the new card:")
+        card_ = "The term for the new card:"
+        print(card_)
+        log.write(card_ + "\n")
         while True:
             term = input()
+            log.write(term + "\n")
             if term in deck.cards:
-                print(f'The term "{term}" already exists. Try again:')
+                again_ = f'The term "{term}" already exists. Try again:'
+                print(again_)
+                log.write(again_ + "\n")
             else:
                 break
-        print("The definition for the new card:")
+        new_card_ = "The definition for the new card:"
+        print(new_card_)
+        log.write(new_card_ + "\n")
         while True:
             definition = input()
             if any(c.definition == definition for c in deck.cards.values()):
-                print(f'The definition "{definition}" already exists. Try again:')
+                try_again_ = f'The definition "{definition}" already exists. Try again:'
+                print(try_again_)
+                log.write(try_again_ + "\n")
             else:
                 break
         deck.add_card(term, definition)
-        print(f'The pair ("{term}":"{definition}") has been added.')
+        added_ = f'The pair ("{term}":"{definition}") has been added.'
+        print(added_)
+        log.write(added_ + "\n")
     except ValueError as e:
         print(e)
+        log.write(str(e) + "\n")
 
 
-def add_cards():
+def add_cards(log: io.StringIO):
     cards = {}
-    print("Input the number of cards:")
+    cards_ = "Input the number of cards:"
+    print(cards_)
+    log.write(cards_ + "\n")
     n_cards = int(input())
+    log.write(cards_ + "\n")
 
     for i in range(1, n_cards + 1):
-        print(f"The term for card #{i}:")
+        i_ = f"The term for card #{i}:"
+        print(i_)
+        log.write(i_ + "\n")
+
         # guard against duplicate terms
         while True:
             term = input()
             if term in cards:
-                print(f'The term "{term}" already exists. Try again:')
+                again_ = f'The term "{term}" already exists. Try again:'
+                print(again_)
+                log.write(again_ + "\n")
             else:
                 break
 
-        print(f"The definition for card #{i}:")
+        card_i_ = f"The definition for card #{i}:"
+        print(card_i_)
+        log.write(card_i_ + "\n")
         while True:
             # check if term or definition already exists
             definition = input()
             if any(c.definition == definition for c in cards.values()):
-                print(f'The definition "{definition}" already exists. Try again:')
+                try_again_ = f'The definition "{definition}" already exists. Try again:'
+                print(try_again_)
+                log.write(try_again_ + "\n")
             else:
                 break
 
@@ -281,21 +305,31 @@ def add_cards():
 
     for term, c in cards.items():
         definition = c.definition
-        print(f'Print the definition of "{term}":')
+        term_ = f'Print the definition of "{term}":'
+        print(term_)
+        log.write(term_ + "\n")
+
         answer = input()
+        log.write(answer + "\n")
 
         if answer == definition:
-            print("Correct!")
+            correct_ = "Correct!"
+            print(correct_)
+            log.write(correct_ + "\n")
+
         else:
             matched = False
             for other_term, other_card in cards.items():
                 if other_card.definition == answer:
-                    print(
-                        f'Wrong. The right answer is "{definition}", but your definition is correct for "{other_term}".')
+                    term__ = f'Wrong. The right answer is "{definition}", but your definition is correct for "{other_term}".'
+                    print(term__)
+                    log.write(term__ + "\n")
                     matched = True
                     break
             if not matched:
-                print(f'Wrong. The right answer is "{definition}".')
+                definition__ = f'Wrong. The right answer is "{definition}".'
+                print(definition__)
+                log.write(definition__ + "\n")
 
 
 if __name__ == "__main__":
