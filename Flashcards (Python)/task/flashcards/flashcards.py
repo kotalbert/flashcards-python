@@ -4,6 +4,8 @@ import io
 from dataclasses import dataclass
 from random import choice
 
+from argparse import ArgumentParser, Namespace
+
 
 @dataclass
 class Flashcard:
@@ -68,10 +70,17 @@ class Deck:
             card.number_tried = 0
 
 def main():
+    parser = ArgumentParser()
+    parser.add_argument("--import_from", help="File to import cards from at startup", default=None)
+    parser.add_argument("--export_to", help="File to export cards to at exit", default=None)
+    args = parser.parse_args()
+
     deck = Deck()
     log = io.StringIO()
+    if args.import_from:
+        handle_import_command(deck, log, args)
     while True:
-        display_menu(deck, log)
+        display_menu(deck, log, args)
 
 
 def handle_remove_command(deck: Deck, log: io.StringIO):
@@ -89,11 +98,14 @@ def handle_remove_command(deck: Deck, log: io.StringIO):
         log.write(str(e))
 
 
-def handle_import_command(deck: Deck, log: io.StringIO):
-    name_ = "File name:"
-    print(name_)
-    log.write(name_ + "\n")
-    filename = input()
+def handle_import_command(deck: Deck, log: io.StringIO, args=None):
+    if args and args.import_from:
+        filename = args.import_from
+    else:
+        name_ = "File name:"
+        print(name_)
+        log.write(name_ + "\n")
+        filename = input()
     try:
         with open(filename, "r") as file:
             n_imported = 0
@@ -115,11 +127,14 @@ def handle_import_command(deck: Deck, log: io.StringIO):
         log.write(found_ + "\n")
 
 
-def handle_export_command(deck: Deck, log: io.StringIO):
-    name_ = "File name:"
-    print(name_)
-    log.write(name_ + "\n")
-    filename = input()
+def handle_export_command(deck: Deck, log: io.StringIO, args: Namespace = None):
+    if args and args.export_to:
+        filename = args.export_to
+    else:
+        name_ = "File name:"
+        print(name_)
+        log.write(name_ + "\n")
+        filename = input()
     with open(filename, "w") as file:
         for card in deck.cards.values():
             file.write(f"{card.term}:{card.definition}:{card.number_tried}\n")
@@ -201,7 +216,7 @@ def handle_reset_stats_command(deck: Deck, log: io.StringIO):
     log.write(reset_ + "\n")
 
 
-def display_menu(deck: Deck, log: io.StringIO):
+def display_menu(deck: Deck, log: io.StringIO, args: Namespace = None):
     stats_ = "Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):"
     print(stats_)
     log.write(stats_ + "\n")
@@ -213,14 +228,22 @@ def display_menu(deck: Deck, log: io.StringIO):
         case "remove":
             handle_remove_command(deck, log)
         case "import":
-            handle_import_command(deck, log)
+            handle_import_command(deck, log, args)
         case "export":
-            handle_export_command(deck, log)
+            handle_export_command(deck, log, args)
         case "ask":
             handle_ask_command(deck, log)
         case "exit":
-            print("Bye bye!")
-            exit(0)
+            if len(deck.cards) == 0:  # if no cards added, just exit without exporting
+                print("Bye bye!")
+                exit(0)
+            elif args and args.export_to:
+                handle_export_command(deck, log, args)
+                print("Bye bye!")
+                exit(0)
+            else:
+                print("Bye bye!")
+                exit(0)
         case "log":
             handle_log_command(deck, log)
         case "hardest card":
