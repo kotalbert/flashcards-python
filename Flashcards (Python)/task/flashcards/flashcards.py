@@ -54,7 +54,7 @@ def main():
         display_menu(deck)
 
 
-def handle_remove_command(deck, log: io.StringIO):
+def handle_remove_command(deck: Deck, log: io.StringIO):
     try:
         card_ = "Which card?"
         print(card_)
@@ -69,7 +69,7 @@ def handle_remove_command(deck, log: io.StringIO):
         log.write(e)
 
 
-def handle_import_command(deck, log: io.StringIO):
+def handle_import_command(deck: Deck, log: io.StringIO):
     name_ = "File name:"
     print(name_)
     log.write(name_ + "\n")
@@ -95,7 +95,7 @@ def handle_import_command(deck, log: io.StringIO):
         log.write(found_ + "\n")
 
 
-def handle_export_command(deck, log: io.StringIO):
+def handle_export_command(deck: Deck, log: io.StringIO):
     name_ = "File name:"
     print(name_)
     log.write(name_ + "\n")
@@ -108,7 +108,7 @@ def handle_export_command(deck, log: io.StringIO):
     log.write(saved_ + "\n")
 
 
-def handle_ask_command(deck, log: io.StringIO):
+def handle_ask_command(deck: Deck, log: io.StringIO):
     ask_ = "How many times to ask?"
     print(ask_)
     log.write(ask_ + "\n")
@@ -140,6 +140,19 @@ def handle_ask_command(deck, log: io.StringIO):
                 log.write(definition__ + "\n")
 
 
+def handle_log_command(deck: Deck, log: io.StringIO):
+    filename_ = "File name:"
+    print(filename_)
+    log.write(filename_ + "\n")
+    filename = input()
+    log.write(filename + "\n")
+    with open(filename, "w") as file:
+        file.write(log.getvalue())
+    saved_ = "The log has been saved."
+    print(saved_)
+    log.write(saved_ + "\n")
+
+
 def display_menu(deck: Deck):
     log = io.StringIO()
     stats_ = "Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):"
@@ -162,7 +175,7 @@ def display_menu(deck: Deck):
             print("Bye bye!")
             exit(0)
         case "log":
-            print("The log feature is not implemented yet.")
+            handle_log_command(deck, log)
         case "hardest card":
             print("The hardest card feature is not implemented yet.")
         case "reset stats":
