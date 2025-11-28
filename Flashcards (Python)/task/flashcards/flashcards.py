@@ -48,6 +48,18 @@ class Deck:
         #     raise ValueError(f'The definition "{new_definition}" already exists.')
         self.cards[term].definition = new_definition
 
+    def get_hardest_cards(self) -> list[Flashcard]:
+        """Return a list of the hardest cards based on number of incorrect tries."""
+
+        if not self.cards:
+            return []
+
+        max_tries = max(card.number_tried for card in self.cards.values())
+        if max_tries == 0:
+            return []
+
+        hardest_cards = [card for card in self.cards.values() if card.number_tried == max_tries]
+        return hardest_cards
 
 def main():
     deck = Deck()
@@ -156,6 +168,25 @@ def handle_log_command(deck: Deck, log: io.StringIO):
     log.write(saved_ + "\n")
 
 
+def handle_hardest_card_command(deck: Deck, log: io.StringIO):
+    hardest_cards = deck.get_hardest_cards()
+    if len(hardest_cards) == 0:
+        no_cards_ = "There are no cards with errors."
+        print(no_cards_)
+        log.write(no_cards_ + "\n")
+    elif len(hardest_cards) == 1:
+        card = hardest_cards[0]
+        one_card_ = f'The hardest card is "{card.term}". You have {card.number_tried} errors answering it.'
+        print(one_card_)
+        log.write(one_card_ + "\n")
+    else:
+        terms = '", "'.join(card.term for card in hardest_cards)
+        n_errors = hardest_cards[0].number_tried
+        multiple_cards_ = f'The hardest cards are "{terms}". You have {n_errors} errors answering them.'
+        print(multiple_cards_)
+        log.write(multiple_cards_ + "\n")
+
+
 def display_menu(deck: Deck):
     log = io.StringIO()
     stats_ = "Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):"
@@ -180,7 +211,7 @@ def display_menu(deck: Deck):
         case "log":
             handle_log_command(deck, log)
         case "hardest card":
-            print("The hardest card feature is not implemented yet.")
+            handle_hardest_card_command(deck, log)
         case "reset stats":
             print("The reset stats feature is not implemented yet.")
         case _:
