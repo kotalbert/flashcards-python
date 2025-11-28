@@ -1,5 +1,6 @@
 """Flashcards application module."""
 
+import io
 from dataclasses import dataclass
 from random import choice
 
@@ -53,18 +54,25 @@ def main():
         display_menu(deck)
 
 
-def handle_remove_command(deck):
+def handle_remove_command(deck, log: io.StringIO):
     try:
-        print("Which card?")
+        card_ = "Which card?"
+        print(card_)
+        log.write(card_ + "\n")
         term = input()
         deck.remove_card(term)
-        print("The card has been removed.")
+        removed_ = "The card has been removed."
+        print(removed_)
+        log.write(removed_ + "\n")
     except ValueError as e:
         print(e)
+        log.write(e)
 
 
-def handle_import_command(deck):
-    print("File name:")
+def handle_import_command(deck, log: io.StringIO):
+    name_ = "File name:"
+    print(name_)
+    log.write(name_ + "\n")
     filename = input()
     try:
         with open(filename, "r") as file:
@@ -78,65 +86,92 @@ def handle_import_command(deck):
                     # update existing card
                     deck.update_card(term, definition)
                     n_imported += 1  # updating also counts as importing
-            print(f"{n_imported} cards have been loaded.")
+            loaded_ = f"{n_imported} cards have been loaded."
+            print(loaded_)
+            log.write(loaded_ + "\n")
     except FileNotFoundError:
-        print("File not found.")
+        found_ = "File not found."
+        print(found_)
+        log.write(found_ + "\n")
 
 
-def handle_export_command(deck):
-    print("File name:")
+def handle_export_command(deck, log: io.StringIO):
+    name_ = "File name:"
+    print(name_)
+    log.write(name_ + "\n")
     filename = input()
     with open(filename, "w") as file:
         for card in deck.cards.values():
             file.write(f"{card.term}:{card.definition}\n")
-    print(f"{len(deck.cards)} cards have been saved.")
+    saved_ = f"{len(deck.cards)} cards have been saved."
+    print(saved_)
+    log.write(saved_ + "\n")
 
 
-def handle_ask_command(deck):
-    print("How many times to ask?")
+def handle_ask_command(deck, log: io.StringIO):
+    ask_ = "How many times to ask?"
+    print(ask_)
+    log.write(ask_ + "\n")
     n_ask = int(input())
     terms = list(deck.cards.keys())
     for _ in range(n_ask):
         term = choice(terms)
         card = deck.cards[term]
-        print(f'Print the definition of "{term}":')
+        term_ = f'Print the definition of "{term}":'
+        print(term_)
+        log.write(term_ + "\n")
         answer = input()
         if answer == card.definition:
-            print("Correct!")
+            correct_ = "Correct!"
+            print(correct_)
+            log.write(correct_ + "\n")
         else:
             matched = False
             for other_term, other_card in deck.cards.items():
                 if other_card.definition == answer:
-                    print(
-                        f'Wrong. The right answer is "{card.definition}", but your definition is correct for "{other_term}".')
+                    term__ = f'Wrong. The right answer is "{card.definition}", but your definition is correct for "{other_term}".'
+                    print(term__)
+                    log.write(term__ + "\n")
                     matched = True
                     break
             if not matched:
-                print(f'Wrong. The right answer is "{card.definition}".')
+                definition__ = f'Wrong. The right answer is "{card.definition}".'
+                print(definition__)
+                log.write(definition__ + "\n")
 
 
 def display_menu(deck: Deck):
-    print("Input the action (add, remove, import, export, ask, exit):")
+    log = io.StringIO()
+    stats_ = "Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):"
+    print(stats_)
+    log.write(stats_ + "\n")
     command = input()
+    log.write(command + "\n")
     match command.lower():
         case "add":
-            handle_add_command(deck)
+            handle_add_command(deck, log)
         case "remove":
-            handle_remove_command(deck)
+            handle_remove_command(deck, log)
         case "import":
-            handle_import_command(deck)
+            handle_import_command(deck, log)
         case "export":
-            handle_export_command(deck)
+            handle_export_command(deck, log)
         case "ask":
-            handle_ask_command(deck)
+            handle_ask_command(deck, log)
         case "exit":
             print("Bye bye!")
             exit(0)
+        case "log":
+            print("The log feature is not implemented yet.")
+        case "hardest card":
+            print("The hardest card feature is not implemented yet.")
+        case "reset stats":
+            print("The reset stats feature is not implemented yet.")
         case _:
             print(f'Unknown command: "{command}"')
 
 
-def handle_add_command(deck: Deck):
+def handle_add_command(deck: Deck, log: io.StringIO):
     try:
         print("The term for the new card:")
         while True:
