@@ -61,6 +61,12 @@ class Deck:
         hardest_cards = [card for card in self.cards.values() if card.number_tried == max_tries]
         return hardest_cards
 
+    def reset_cards_stats(self):
+        """Reset the number of incorrect tries for all cards."""
+
+        for card in self.cards.values():
+            card.number_tried = 0
+
 def main():
     deck = Deck()
     while True:
@@ -187,6 +193,13 @@ def handle_hardest_card_command(deck: Deck, log: io.StringIO):
         log.write(multiple_cards_ + "\n")
 
 
+def handle_reset_stats_command(deck: Deck, log: io.StringIO):
+    deck.reset_cards_stats()
+    reset_ = "Card statistics have been reset."
+    print(reset_)
+    log.write(reset_ + "\n")
+
+
 def display_menu(deck: Deck):
     log = io.StringIO()
     stats_ = "Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):"
@@ -213,7 +226,7 @@ def display_menu(deck: Deck):
         case "hardest card":
             handle_hardest_card_command(deck, log)
         case "reset stats":
-            print("The reset stats feature is not implemented yet.")
+            handle_reset_stats_command(deck, log)
         case _:
             print(f'Unknown command: "{command}"')
 
