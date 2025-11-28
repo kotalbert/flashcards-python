@@ -9,6 +9,7 @@ from random import choice
 class Flashcard:
     term: str
     definition: str
+    number_tried: int = 0
 
 
 class Deck:
@@ -17,7 +18,7 @@ class Deck:
     def __init__(self):
         self.cards = {}
 
-    def add_card(self, term: str, definition: str):
+    def add_card(self, term: str, definition: str, number_tried: int = 0):
         """Add a new flashcard to the deck.
 
         Guard against duplicate terms and definitions.
@@ -28,7 +29,7 @@ class Deck:
             raise ValueError(f'The term "{term}" already exists.')
         if any(c.definition == definition for c in self.cards.values()):
             raise ValueError(f'The definition "{definition}" already exists.')
-        self.cards[term] = Flashcard(term, definition)
+        self.cards[term] = Flashcard(term, definition, number_tried)
 
     def remove_card(self, term: str):
         """Remove a flashcard from the deck by its term."""
@@ -78,9 +79,9 @@ def handle_import_command(deck: Deck, log: io.StringIO):
         with open(filename, "r") as file:
             n_imported = 0
             for line in file:
-                term, definition = line.strip().split(":")
+                term, definition, number_tried = line.strip().split(":")
                 try:
-                    deck.add_card(term, definition)
+                    deck.add_card(term, definition, number_tried)
                     n_imported += 1
                 except ValueError:
                     # update existing card
@@ -102,7 +103,7 @@ def handle_export_command(deck: Deck, log: io.StringIO):
     filename = input()
     with open(filename, "w") as file:
         for card in deck.cards.values():
-            file.write(f"{card.term}:{card.definition}\n")
+            file.write(f"{card.term}:{card.definition}:{card.number_tried}\n")
     saved_ = f"{len(deck.cards)} cards have been saved."
     print(saved_)
     log.write(saved_ + "\n")
@@ -130,12 +131,14 @@ def handle_ask_command(deck: Deck, log: io.StringIO):
             for other_term, other_card in deck.cards.items():
                 if other_card.definition == answer:
                     term__ = f'Wrong. The right answer is "{card.definition}", but your definition is correct for "{other_term}".'
+                    card.number_tried += 1
                     print(term__)
                     log.write(term__ + "\n")
                     matched = True
                     break
             if not matched:
                 definition__ = f'Wrong. The right answer is "{card.definition}".'
+                card.number_tried += 1
                 print(definition__)
                 log.write(definition__ + "\n")
 
